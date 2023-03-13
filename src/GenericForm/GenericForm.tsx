@@ -1,3 +1,4 @@
+import { Button, FormControl } from "@mui/material";
 import React from "react";
 import FormBody from "../Components/FormBody/FormBody";
 
@@ -11,10 +12,12 @@ export const GenericForm: React.FC<Props> = (props) => {
   const { onSubmit, name, onSetInput } = props;
 
   return (
-    <form onSubmit={onSubmit}>
-      <FormBody onSetInput={onSetInput} name={name} />
-      <button type="submit">Submit</button>
-    </form>
+    <FormControl>
+      <form onSubmit={onSubmit}>
+        <FormBody onSetInput={onSetInput} name={name} />
+        <Button type="submit">submit</Button>
+      </form>
+    </FormControl>
   );
 };
 export default GenericForm;
