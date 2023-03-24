@@ -1,7 +1,7 @@
-import { cezarCypher } from "./utils";
+import { cezarCypher, decryptCezarCypher } from "./utils";
 describe("Cezar utils test ", () => {
   const input = "abc";
-  const keys = [0, 1, -1, 2];
+  const keys = ["0", "1", "-1", "2"];
   const results = ["abc", "bcd", "abc", "cde"];
   it.each([
     [input, keys[0], results[0]],
@@ -10,5 +10,6 @@ describe("Cezar utils test ", () => {
     [input, keys[3], results[3]],
   ])("Should match expected result", (input, key, result) => {
     expect(cezarCypher(input, key)).toStrictEqual(result);
+    expect(decryptCezarCypher(result, key)).toStrictEqual(input);
   });
 });

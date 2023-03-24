@@ -1,15 +1,9 @@
-import { Header } from "./Components/Header/Header";
-import RailFance from "./Components/Algorithms/RailFance/RailFance";
-import Cezar from "../src/Components/Algorithms/Cezar/Cezar";
-import Vignere from "./Components/Algorithms/Vigenere/Vigenere";
+import PS1 from "./Components/Containers/PS1/PS1";
 
 function App() {
   return (
     <>
-      <Header />
-      <RailFance />
-      <Cezar />
-      <Vignere />
+      <PS1 />
     </>
   );
 }

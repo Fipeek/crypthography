@@ -1,5 +1,5 @@
-export const ALOGRITHM_NAMES = {
-  RAIL_FANCE: "Rail Fance",
-  CEZAR: "Cezar",
-  VIGENERE: "Vigenere",
+const KEY_TYPES = {
+  NUMBER: "number",
+  TEXT: "text",
 } as const;
+export type KeyTypes = typeof KEY_TYPES[keyof typeof KEY_TYPES];

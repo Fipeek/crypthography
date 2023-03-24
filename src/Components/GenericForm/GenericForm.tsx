@@ -1,11 +1,11 @@
 import { Button, FormControl } from "@mui/material";
 import React from "react";
-import { AlogirthmNames } from "../../config/config";
+
 import FormBody from "../FormBody/FormBody";
 
 type Props = {
   onSubmit: (e: React.FormEvent) => void;
-  name: AlogirthmNames;
+  name: string;
   onSetInput: (input: string) => void;
 };
 

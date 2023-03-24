@@ -1,7 +1,7 @@
-import { railFance } from "./utils";
+import { decryptRailFance, railFance } from "./utils";
 describe("rail fance utils test ", () => {
   const input = "test";
-  const keys = [0, 1, -1, 2];
+  const keys = ["0", "1", "-1", "2"];
   const results = ["test", "test", "test", "tset"];
   it.each([
     [input, keys[0], results[0]],
@@ -10,5 +10,6 @@ describe("rail fance utils test ", () => {
     [input, keys[3], results[3]],
   ])("Should match expected result", (input, key, result) => {
     expect(railFance(input, key)).toStrictEqual(result);
+    expect(decryptRailFance(result, key)).toStrictEqual(input);
   });
 });
