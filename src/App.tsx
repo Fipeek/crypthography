@@ -1,9 +1,9 @@
-import RailFance from "./Components/RailFance/RailFance";
+import PS1 from "./Components/Containers/PS1/PS1";
 
 function App() {
   return (
     <>
-      <RailFance></RailFance>
+      <PS1 />
     </>
   );
 }

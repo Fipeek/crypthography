@@ -1,6 +1,7 @@
 import { Button, FormControl } from "@mui/material";
 import React from "react";
-import FormBody from "../Components/FormBody/FormBody";
+
+import FormBody from "../FormBody/FormBody";
 
 type Props = {
   onSubmit: (e: React.FormEvent) => void;
