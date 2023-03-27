@@ -4,6 +4,7 @@ import RailFance from "../../Algorithms/RailFance/RailFance";
 import ShiftMatrixA from "../../Algorithms/ShiftMatrixA/ShiftMatrixA";
 import Vignere from "../../Algorithms/Vigenere/Vigenere";
 import Matrix3 from "../../Algorithms/Matrix/Matrix3";
+import ShiftMatrixB from "../../Algorithms/ShiftMatrixB/ShiftMatrixB";
 import { Box } from "@mui/material";
 const PS1: React.FC = () => {
   return (
@@ -23,13 +24,10 @@ const PS1: React.FC = () => {
       <Cezar />
       <RailFance />
       <Vignere />
-
-      <ShiftMatrixA/>
-    </>
-
+      <ShiftMatrixA />
+      <ShiftMatrixB />
       <Matrix3 />
     </Box>
-
   );
 };
 export default PS1;

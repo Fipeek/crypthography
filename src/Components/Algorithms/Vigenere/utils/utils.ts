@@ -1,6 +1,5 @@
 import { ALFABETH_LENGTH } from "../../../../config/config";
-// TO DO:
-// write test for this function
+
 export const vigenerCypher = (input: string, key: string): string => {
   if (!key) return input;
   const splittedInput = input.split("");
