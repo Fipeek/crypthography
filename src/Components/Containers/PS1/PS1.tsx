@@ -1,6 +1,7 @@
 import React from "react";
 import Cezar from "../../Algorithms/Cezar/Cezar";
 import RailFance from "../../Algorithms/RailFance/RailFance";
+import ShiftMatrixA from "../../Algorithms/ShiftMatrixA/ShiftMatrixA";
 import Vignere from "../../Algorithms/Vigenere/Vigenere";
 import Matrix3 from "../../Algorithms/Matrix/Matrix3";
 import { Box } from "@mui/material";
@@ -22,8 +23,13 @@ const PS1: React.FC = () => {
       <Cezar />
       <RailFance />
       <Vignere />
+
+      <ShiftMatrixA/>
+    </>
+
       <Matrix3 />
     </Box>
+
   );
 };
 export default PS1;
