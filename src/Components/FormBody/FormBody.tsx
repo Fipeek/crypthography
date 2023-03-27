@@ -1,4 +1,4 @@
-import { FormLabel, Input } from "@mui/material";
+import { Box, FormLabel, Input } from "@mui/material";
 
 type Props = {
   name: string;
@@ -10,10 +10,23 @@ const FormBody: React.FC<Props> = (props) => {
     onSetInput(e.target.value);
   };
   return (
-    <div>
-      <FormLabel>{`${name}: `}</FormLabel>
-      <Input type="text" onChange={handleChange} />
-    </div>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <FormLabel>Message</FormLabel>
+      <Input
+        sx={{
+          backgroundColor: "rgba(255,255,255,0.2)",
+          width: "300px", //stala szerokosc pola tekstowego - mozna zmienic
+        }}
+        multiline
+        type="text"
+        onChange={handleChange}
+      />
+    </Box>
   );
 };
 export default FormBody;
