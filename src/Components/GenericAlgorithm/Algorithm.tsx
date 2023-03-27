@@ -24,9 +24,29 @@ const Algorithm: React.FC<props> = (props) => {
     setOutput(onConvert(input, key));
   };
   return (
-    <Box>
-      <KeyInput onChange={handleKeyChange} name="key" type={keyType} />
-      <GenericForm onSubmit={handleSubmit} onSetInput={setInput} name={name} />
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          width: "100%",
+          gap: "3rem",
+          padding: "1rem",
+          justifyContent: "space-around",
+        }}
+      >
+        <KeyInput onChange={handleKeyChange} name="key" type={keyType} />
+        <GenericForm
+          onSubmit={handleSubmit}
+          onSetInput={setInput}
+          name={name}
+        />
+      </Box>
       <Output output={output} />
     </Box>
   );

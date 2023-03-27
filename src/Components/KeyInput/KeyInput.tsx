@@ -10,9 +10,22 @@ type props = {
 export const KeyInput: React.FC<props> = (props) => {
   const { onChange, type, name, defaultValue } = props;
   return (
-    <Box>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+      }}
+    >
       <InputLabel>{name}</InputLabel>
-      <Input defaultValue={defaultValue} onChange={onChange} type={type} />
+      <Input
+        sx={{
+          backgroundColor: "rgba(255,255,255,0.2)",
+        }}
+        defaultValue={defaultValue}
+        onChange={onChange}
+        type={type}
+      />
     </Box>
   );
 };
