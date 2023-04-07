@@ -20,4 +20,20 @@ jobs:
       run: echo "CI=true" >> $GITHUB_ENV
       
     - name: Install dependencies
-      run: npm ci --strict-peer-dependencies
+      run: npm install 
+    - name: run build
+      run: npm run build
+  test:
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Test
+      run: npm run test
+   
+   
+      
