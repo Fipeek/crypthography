@@ -1,0 +1,19 @@
+image: node:latest
+stages:
+  - build
+  - test
+
+# Define jobs within each stage
+job_build:
+  stage: build
+  script:
+    - npm install # Install dependencies
+    - npm run build
+  variables:
+    CI: "false" # Set CI environment variable to false
+
+job_test:
+  stage: test
+  script:
+    - npm ci
+    - npm run test
