@@ -32,6 +32,11 @@ const Pseudorandom: React.FC = () => {
         wordBreak: "break-all",
         display: "flex",
         flexDirection: "column",
+        backgroundColor: "rgba(255,255,255,0.5)",
+        borderRadius: "1rem",
+        boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+        margin: "1rem",
+        padding: "1rem",
       }}
     >
       <Box

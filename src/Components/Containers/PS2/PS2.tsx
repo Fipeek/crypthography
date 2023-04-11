@@ -1,6 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import Pseudorandom from "../../Algorithms/Pseudorandom/pseudorandom";
+import { StreamCipher } from "../../Algorithms/StreamCipher/StreamCipher";
 const PS2: React.FC = () => {
   return (
     <Box
@@ -17,6 +18,7 @@ const PS2: React.FC = () => {
       }}
     >
       <Pseudorandom />
+      <StreamCipher></StreamCipher>
     </Box>
   );
 };
