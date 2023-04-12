@@ -1,5 +1,5 @@
 export const matrix3 = (input: string, key: string): string => {
-  input = input.replace(/ /g, "");
+  // input = input.replace(/ /g, "");
 
   const keyAlphabeticalOrder = key.split("").sort().join("");
 
