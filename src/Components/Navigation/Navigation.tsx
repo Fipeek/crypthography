@@ -56,6 +56,27 @@ export const Navigation: React.FC = () => {
             PS2
           </Link>
         </ListItem>
+        <ListItem
+          sx={{
+            color: "#abe7e9",
+            fontSize: "2.5rem",
+            fontFamily: "helvetica",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            transition: "0.2s",
+            "&:hover": {
+              backgroundColor: "#abe7e9",
+              cursor: "pointer",
+              color: "black",
+            },
+          }}
+        >
+          <Link
+            to="/PS3"
+            style={{ width: "100%", textDecoration: "none", color: "#abe7e9" }}
+          >
+            PS3
+          </Link>
+        </ListItem>
       </List>
     </Box>
   );
