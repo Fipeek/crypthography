@@ -38,6 +38,14 @@ export const splitIntoBlocks = (input: string, blockSize: number) => {
 
 export const joinBlocks = (...blocks: string[]) => blocks.join("");
 
+export const applyXOR = (input1: string, input2: string) => {
+  const output = [];
+  for (let i = 0; i < input1.length; i++) {
+    output.push(input1[i] === input2[i] ? "0" : "1");
+  }
+  return output.join("");
+};
+
 export const applyPermutation = (
   input: number[],
   permutationTable: number[]
