@@ -36,6 +36,30 @@ export const splitIntoBlocks = (input: string, blockSize: number) => {
   return blocks;
 };
 
+export const getNumber = (sixBitBinaryString: string, set: number[][]) => {
+  const firstAndLast = sixBitBinaryString[0] + sixBitBinaryString[5];
+  const middleFour = sixBitBinaryString.slice(1, 5);
+  const firstDecimal = parseInt(firstAndLast, 2);
+  const secondDecimal = parseInt(middleFour, 2);
+
+  return set[firstDecimal][secondDecimal].toString(2);
+};
+
+export const iterate = (string48bits: string) => {
+  const tab = splitIntoBlocks(string48bits, 6);
+  let result = "";
+  result += getNumber(tab[0], Tables.s1);
+  result += getNumber(tab[1], Tables.s2);
+  result += getNumber(tab[2], Tables.s3);
+  result += getNumber(tab[3], Tables.s4);
+  result += getNumber(tab[4], Tables.s5);
+  result += getNumber(tab[5], Tables.s6);
+  result += getNumber(tab[6], Tables.s7);
+  result += getNumber(tab[7], Tables.s8);
+
+  return result;
+};
+
 export const joinBlocks = (...blocks: string[]) => blocks.join("");
 
 export const applyPermutation = (
