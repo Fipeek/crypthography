@@ -36,6 +36,33 @@ export const splitIntoBlocks = (input: string, blockSize: number) => {
   return blocks;
 };
 
+export function splitFileIntoBlocks(fileData: string): string[] {
+  const dataLength = fileData.length;
+  const numberOfBytes = Math.ceil(dataLength / 8);
+  const divisibleDataLength = Math.floor(dataLength / 64) * 64;
+
+  const divisibleBlocks = [];
+  for (let i = 0; i < divisibleDataLength; i += 64) {
+    divisibleBlocks.push(fileData.slice(i, i + 64));
+  }
+
+  let returnData = divisibleBlocks;
+
+  if (numberOfBytes % 8 !== 0) {
+    const restData = fileData.slice(divisibleDataLength);
+    const paddedBlock =
+      restData +
+      "0".repeat(56 - restData.length) +
+      ((64 - restData.length) / 8).toString(2).padStart(8, "0");
+    returnData.push(paddedBlock);
+  } else {
+    const paddedBlock = "0".repeat(56) + (8).toString(2).padStart(8, "0");
+    returnData.push(paddedBlock);
+  }
+
+  return returnData;
+}
+
 export const getNumber = (sixBitBinaryString: string, set: number[][]) => {
   const firstAndLast = sixBitBinaryString[0] + sixBitBinaryString[5];
   const middleFour = sixBitBinaryString.slice(1, 5);
@@ -75,7 +102,7 @@ export const applyPermutation = (
 
 export class Tables {
   static readonly IterateShiftAmount: number[] = [
-    1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1
+    1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1,
   ];
 
   static readonly initialPermutation: number[] = [
