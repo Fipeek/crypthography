@@ -1,9 +1,6 @@
-// co nowe ps bedziemy dodawac nawigacje to strony
-
 import { Box, List, ListItem } from "@mui/material";
 import { Link } from "react-router-dom";
 
-// poki co bedzie pusto
 export const Navigation: React.FC = () => {
   return (
     <Box
