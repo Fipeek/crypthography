@@ -17,5 +17,3 @@ export function* lfsr(polynomial: number): Generator<number> {
     yield register & 1;
   }
 }
-
-

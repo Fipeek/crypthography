@@ -69,7 +69,7 @@ const getNumber = (sixBitBinaryString: string, set: number[][]) => {
 
 export const iterate = (string48bits: string) => {
   const tab = splitIntoBlocks(string48bits, 6);
-  console.log(tab);
+  // console.log(tab);
   let result = "";
   result += getNumber(tab[0], Tables.s1);
 
@@ -125,6 +125,17 @@ export function binaryToString(binaryString: string): string {
 
   return result;
 }
+
+export function getInversePermutationTable(
+  permutationTable: number[]
+): number[] {
+  const inverseTable: number[] = new Array(permutationTable.length);
+  for (let i = 0; i < permutationTable.length; i++) {
+    inverseTable[permutationTable[i] - 1] = i + 1;
+  }
+  return inverseTable;
+}
+
 export class Tables {
   static readonly IterateShiftAmount: number[] = [
     1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1,
@@ -136,6 +147,7 @@ export class Tables {
     1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47,
     39, 31, 23, 15, 7,
   ];
+
   static readonly inversedInitialPermutation: number[] = [
     40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14,
     54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60,
@@ -158,6 +170,7 @@ export class Tables {
     16, 17, 16, 17, 18, 19, 20, 21, 20, 21, 22, 23, 24, 25, 24, 25, 26, 27, 28,
     29, 28, 29, 30, 31, 32, 1,
   ];
+
   static readonly inversedPermutation: number[] = [
     16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10, 2, 8, 24, 14,
     32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25,
