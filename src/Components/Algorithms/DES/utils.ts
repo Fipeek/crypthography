@@ -15,10 +15,6 @@ export const generateBinaryKey = (length: number) => {
   return key.join("");
 };
 
-export const convertFromBinaryToDecimal = (input: string) =>
-  parseInt(input, 2).toString();
-export const convertToBinaryToString = (input: string) =>
-  String.fromCharCode(parseInt(input, 2));
 export const splitIntoBlocks = (input: string, blockSize: number) => {
   const blocks = [];
   for (let i = 0; i < input.length; i += blockSize) {
@@ -69,7 +65,6 @@ const getNumber = (sixBitBinaryString: string, set: number[][]) => {
 
 export const iterate = (string48bits: string) => {
   const tab = splitIntoBlocks(string48bits, 6);
-  // console.log(tab);
   let result = "";
   result += getNumber(tab[0], Tables.s1);
 
@@ -111,6 +106,7 @@ export const shiftLeft = (input: string, shiftAmount: number) => {
   const output = input.slice(shiftAmount) + input.slice(0, shiftAmount);
   return output;
 };
+
 export function binaryToString(binaryString: string): string {
   if (binaryString.length % 8 !== 0) {
     throw new Error("The length of the binary string must be divisible by 8.");
@@ -124,16 +120,6 @@ export function binaryToString(binaryString: string): string {
   }
 
   return result;
-}
-
-export function getInversePermutationTable(
-  permutationTable: number[]
-): number[] {
-  const inverseTable: number[] = new Array(permutationTable.length);
-  for (let i = 0; i < permutationTable.length; i++) {
-    inverseTable[permutationTable[i] - 1] = i + 1;
-  }
-  return inverseTable;
 }
 
 export class Tables {
@@ -171,21 +157,15 @@ export class Tables {
     29, 28, 29, 30, 31, 32, 1,
   ];
 
-  static readonly inversedPermutation: number[] = [
-    16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10, 2, 8, 24, 14,
-    32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25,
-  ];
-
   static readonly pPermutation: number[] = [
     16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10, 2, 8, 24, 14,
     32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25,
   ];
-
   static readonly s1: number[][] = [
-    [15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10],
-    [3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5],
-    [0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15],
-    [13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9],
+    [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
+    [0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
+    [4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0],
+    [15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13],
   ];
   static readonly s2: number[][] = [
     [15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10],

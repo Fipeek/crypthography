@@ -3,10 +3,10 @@ import {
   applyPermutation,
   applyXOR,
   binaryToString,
-  convertFromBinaryToDecimal,
+  // convertFromBinaryToDecimal,
   convertToBinary,
   convertToBinaryArray,
-  convertToBinaryToString,
+  // convertToBinaryToString,
   generateBinaryKey,
   iterate,
   joinBlocks,
@@ -19,7 +19,13 @@ import {
 import AlgorithmBox from "../../GenericAlgorithm/AlgorithmBox";
 import { Button } from "@mui/material";
 
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder("utf-8");
 const key = generateBinaryKey(64);
+// const key = "1110001101011001010110001000100101010010100010001111111101000101";
+// const key = "1111101011011000111111110011111010101101100100111101111111110111";
+// const key = "1111111011100110001111000101111001101110110001010111100000000000";
+// const key = "1011010101000010101000001100000001110111111011111001001101110000"; //klucz gdy przeniesione nizej minusblock
 
 const Des: React.FC = () => {
   const [input, setInput] = useState<string>("");
@@ -41,111 +47,34 @@ const Des: React.FC = () => {
     const reader = new FileReader();
     if (file) {
       reader.onload = (e) => {
-        const text = e.target?.result;
-        setInputV2(text as string);
+        setInputV2(convertToBinaryArray(reader.result as string));
       };
-      reader.readAsText(file);
+      reader.readAsBinaryString(file);
     }
   };
 
-  const handleDecrypt = () => {
+  const handleDes = (encryption: Boolean) => {
+    let binaryInput = convertToBinaryArray(input); //✅
+    if (!encryption) {
+      binaryInput = inputV2;
+    }
+    console.log("wejscie binarnie: " + binaryInput);
+    // console.log("🔪dlugosc wejscia: " + binaryInput.length);
     console.log("klucz:" + key);
-    const binaryInput = convertToBinaryArray(inputV2);
-
     // _________________________________________________________________________
     // rozbijamy na bloki po 64 bity
-    // _________________________________________________________________________
-    const splittedInputIntoBlocks = splitIntoBlocks(binaryInput, 64);
-    console.log("decrypt input text: " + inputV2);
-    console.log("decrypt input binary: " + splittedInputIntoBlocks);
+    let splittedInputIntoBlocks = splitFileIntoBlocks(binaryInput);
+    if (!encryption) {
+      splittedInputIntoBlocks = splitIntoBlocks(binaryInput, 64);
+    }
+
+    console.log("🔪wejscie binarnie bloki: " + splittedInputIntoBlocks);
     // _________________________________________________________________________
     // permutacja początkowa
     // _________________________________________________________________________
     const blocksAfterFirstPermuation = splittedInputIntoBlocks.map((block) =>
       applyPermutation(block, Tables.initialPermutation)
-    );
-    // _________________________________________________________________________
-    // rozbijamy na lewą i prawą część
-    // _________________________________________________________________________
-    let blocksAfterFirstStep = blocksAfterFirstPermuation.map((block) => {
-      const splitedBlock = splitIntoBlocks(block, 32);
-      const left = splitedBlock[0];
-      const right = splitedBlock[1];
-      return { left, right };
-    });
-    // _________________________________________________________________________
-    // permutujemy klucz i rozdzielamy na lewą i prawą część
-    // _________________________________________________________________________
-    const keyAfterPermutation = applyPermutation(key, Tables.keyPermutation);
-    const splitedKey = {
-      left: splitIntoBlocks(keyAfterPermutation, 28)[0],
-      right: splitIntoBlocks(keyAfterPermutation, 28)[1],
-    };
-    const leftKeys: string[] = [];
-
-    const rightKeys = [];
-    const keys: string[] = [];
-    let nthRightBlocks = blocksAfterFirstStep.map((block) => block.right);
-    // console.log(nthRightBlocks);
-    const nthLeftBlocks = blocksAfterFirstStep.map((block) => block.left);
-
-    const finalBlocks: string[] = [];
-    for (let i = 0; i < 16; i++) {
-      leftKeys.push(shiftLeft(splitedKey.left, Tables.IterateShiftAmount[i]));
-      rightKeys.push(shiftLeft(splitedKey.right, Tables.IterateShiftAmount[i]));
-
-      keys.push(
-        applyPermutation(
-          joinBlocks(leftKeys[i], rightKeys[i]),
-          Tables.keyPermutation2
-        )
-      );
-    }
-    for (let j = 0; j < blocksAfterFirstStep.length; j++) {
-      for (let i = 15; i >= 0; i--) {
-        nthRightBlocks[j] = applyPermutation(
-          nthRightBlocks[j],
-          Tables.ePermutation
-        );
-        nthRightBlocks[j] = applyXOR(nthRightBlocks[j], keys[i]);
-        nthRightBlocks[j] = iterate(nthRightBlocks[j]);
-        nthRightBlocks[j] = applyPermutation(
-          nthRightBlocks[j],
-          Tables.pPermutation
-        );
-
-        let nthRightBlockMinusOne = nthRightBlocks[j];
-        nthRightBlocks[j] = applyXOR(nthRightBlocks[j], nthLeftBlocks[j]);
-        nthLeftBlocks[j] = nthRightBlockMinusOne;
-      }
-      let finalBlock = joinBlocks(nthLeftBlocks[j], nthRightBlocks[j]);
-      finalBlock = applyPermutation(
-        finalBlock,
-        Tables.inversedInitialPermutation
-      );
-      finalBlocks.push(finalBlock);
-    }
-    const finalBlocksV2 = binaryToString(joinBlocks(...finalBlocks));
-
-    console.log("decrypt output text: " + finalBlocksV2);
-    console.log("decrypt output binary: " + finalBlocks);
-  };
-
-  const handleEncrypt = () => {
-    const binaryInput = convertToBinaryArray(input);
-    console.log("klucz:" + key);
-    // _________________________________________________________________________
-    // rozbijamy na bloki po 64 bity
-    // _________________________________________________________________________
-    const splittedInputIntoBlocks = splitFileIntoBlocks(binaryInput);
-    console.log("encrypt input text: " + input);
-    console.log("encrypt input binary: " + splittedInputIntoBlocks);
-    // _________________________________________________________________________
-    // permutacja początkowa
-    // _________________________________________________________________________
-    const blocksAfterFirstPermuation = splittedInputIntoBlocks.map((block) =>
-      applyPermutation(block, Tables.initialPermutation)
-    );
+    ); //blocksAfterFirstPermuation
     // _________________________________________________________________________
     // rozbijamy na lewą i prawą część
     // _________________________________________________________________________
@@ -155,20 +84,20 @@ const Des: React.FC = () => {
       const right = splitedBlock[1];
       return { left, right };
     });
-    // _________________________________________________________________________
-    // permutujemy klucz i rozdzielamy na lewą i prawą część
-    // _________________________________________________________________________
+
     const keyAfterPermutation = applyPermutation(key, Tables.keyPermutation);
+
     const splitedKey = {
       left: splitIntoBlocks(keyAfterPermutation, 28)[0],
       right: splitIntoBlocks(keyAfterPermutation, 28)[1],
     };
+
     const leftKeys: string[] = [];
 
     const rightKeys = [];
     const keys: string[] = [];
     let nthRightBlocks = blocksAfterFirstStep.map((block) => block.right);
-    // console.log(nthRightBlocks);
+
     const nthLeftBlocks = blocksAfterFirstStep.map((block) => block.left);
 
     const finalBlocks: string[] = [];
@@ -183,8 +112,14 @@ const Des: React.FC = () => {
         )
       );
     }
+
+    if (!encryption) {
+      keys.reverse();
+    }
+
     for (let j = 0; j < blocksAfterFirstStep.length; j++) {
       for (let i = 0; i < 16; i++) {
+        const ogRightBlock = nthRightBlocks[j];
         nthRightBlocks[j] = applyPermutation(
           nthRightBlocks[j],
           Tables.ePermutation
@@ -195,29 +130,39 @@ const Des: React.FC = () => {
           nthRightBlocks[j],
           Tables.pPermutation
         );
+        nthRightBlocks[j] = applyXOR(nthLeftBlocks[j], nthRightBlocks[j]);
 
-        let nthRightBlockMinusOne = nthRightBlocks[j];
-        nthRightBlocks[j] = applyXOR(nthRightBlocks[j], nthLeftBlocks[j]);
-        nthLeftBlocks[j] = nthRightBlockMinusOne;
+        nthLeftBlocks[j] = ogRightBlock;
       }
-      let finalBlock = joinBlocks(nthLeftBlocks[j], nthRightBlocks[j]);
+      let finalBlock = joinBlocks(nthRightBlocks[j], nthLeftBlocks[j]);
       finalBlock = applyPermutation(
         finalBlock,
         Tables.inversedInitialPermutation
       );
       finalBlocks.push(finalBlock);
     }
-    const finalBlocksV2 = binaryToString(joinBlocks(...finalBlocks));
-    console.log("encrypt output text: " + finalBlocksV2);
-    console.log("encrypt output binary: " + finalBlocks);
+    const joinedBlocks = joinBlocks(...finalBlocks);
+    const binaryArray = new Uint8Array(
+      joinedBlocks.match(/.{1,8}/g)!.map((byte) => parseInt(byte, 2))
+    );
+    const uint8Array = new Uint8Array(binaryArray);
+    const blob = new Blob([uint8Array], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const downloadWindow = window.open(url, "_blank");
+    downloadWindow!.focus();
+    URL.revokeObjectURL(url);
+    const finalText = textDecoder.decode(binaryArray);
+    console.log("🔪output text: " + finalText);
+    console.log("🔪output binary: " + finalBlocks);
+
     console.log("-------------------------------------");
   };
   return (
     <AlgorithmBox algorithmName="DES">
       <input type="file" onChange={handleReadFromFile} />
-      <Button onClick={handleEncrypt}>Encrypt</Button>
+      <Button onClick={() => handleDes(true)}>Encrypt</Button>
       <input type="file" onChange={handleReadFromFileV2} />
-      <Button onClick={handleDecrypt}>Decrypt</Button>
+      <Button onClick={() => handleDes(false)}>Decrypt</Button>
     </AlgorithmBox>
   );
 };
