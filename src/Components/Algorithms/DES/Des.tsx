@@ -45,7 +45,6 @@ const Des: React.FC = () => {
   const handleDes = (encryption: Boolean) => {
     // wczytujemy plik w postaci stringa przechowującego dane binarne
     const binaryInput = encryption ? encryptionInput : decryptionInput;
-    console.log("wejscie binarnie: " + binaryInput);
     console.log("klucz:" + key);
     // rozbijamy na bloki po 64 bity
     let splittedInputIntoBlocks = splitFileIntoBlocks(binaryInput);
@@ -136,7 +135,16 @@ const Des: React.FC = () => {
       finalBlocks.push(finalBlock);
     }
     // łączymy bloki w jeden ciąg bitów i konwertujemy na tablicę 8 bitowych liczb w celu utworzenia pliku binarnego stanowiącego wynik algorytmu
-    const joinedBlocks = joinBlocks(...finalBlocks);
+    let joinedBlocks = joinBlocks(...finalBlocks);
+
+    // w przypadku odszyfrowywania usuwamy bity dodane podczas szyfrowania
+    if (!encryption) {
+      const addedBytesBinary = joinedBlocks.slice(-4);
+      const addedBytes = parseInt(addedBytesBinary, 2);
+      console.log("added bytes: " + addedBytes);
+      joinedBlocks = joinedBlocks.slice(0, -addedBytes * 8);
+    }
+
     const binaryArray = new Uint8Array(
       joinedBlocks.match(/.{1,8}/g)!.map((byte) => parseInt(byte, 2))
     );
@@ -148,7 +156,6 @@ const Des: React.FC = () => {
     URL.revokeObjectURL(url);
     const finalText = textDecoder.decode(binaryArray);
     console.log("output text: " + finalText);
-    console.log("output binary: " + finalBlocks);
   };
   return (
     <AlgorithmBox algorithmName="DES">
