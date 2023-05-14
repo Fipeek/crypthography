@@ -1,7 +1,7 @@
 export const convertToBinary = (input: string) =>
   input.charCodeAt(0).toString(2).padStart(8, "0");
 
-export const convertToBinaryArray = (input: string) =>
+export const convertToBinaryString = (input: string) =>
   input
     .split("")
     .map((char) => convertToBinary(char))
@@ -34,15 +34,19 @@ export function splitFileIntoBlocks(fileData: string): string[] {
   }
 
   let returnData = divisibleBlocks;
-
+  // jeśli dane nie są podzielne przez 64bity
   if (numberOfBytes % 8 !== 0) {
     const restData = fileData.slice(divisibleDataLength);
     const paddedBlock =
       restData +
+      // dopelniamy blok odpowiednią ilością zer
       "0".repeat(56 - restData.length) +
+      // oraz bajtem informującym o ilości dopisanych bajtów (wliczając ten bajt)
       ((64 - restData.length) / 8).toString(2).padStart(8, "0");
     returnData.push(paddedBlock);
   } else {
+    // jeśli dane są podzielne przez 64bity, dodajemy kolejny 64 bitowy blok
+    // 56 zer + bajt przechowujący binarną liczbę 8 (ilość dodanych bajtów)
     const paddedBlock = "0".repeat(56) + (8).toString(2).padStart(8, "0");
     returnData.push(paddedBlock);
   }
@@ -106,21 +110,6 @@ export const shiftLeft = (input: string, shiftAmount: number) => {
   const output = input.slice(shiftAmount) + input.slice(0, shiftAmount);
   return output;
 };
-
-export function binaryToString(binaryString: string): string {
-  if (binaryString.length % 8 !== 0) {
-    throw new Error("The length of the binary string must be divisible by 8.");
-  }
-
-  let result = "";
-  for (let i = 0; i < binaryString.length; i += 8) {
-    const binaryChunk = binaryString.substr(i, 8);
-    const decimalValue = parseInt(binaryChunk, 2);
-    result += String.fromCharCode(decimalValue);
-  }
-
-  return result;
-}
 
 export class Tables {
   static readonly IterateShiftAmount: number[] = [

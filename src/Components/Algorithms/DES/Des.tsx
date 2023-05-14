@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   applyPermutation,
   applyXOR,
-  binaryToString,
-  // convertFromBinaryToDecimal,
-  convertToBinary,
-  convertToBinaryArray,
-  // convertToBinaryToString,
+  convertToBinaryString,
   generateBinaryKey,
   iterate,
   joinBlocks,
@@ -17,29 +13,22 @@ import {
 } from "./utils";
 
 import AlgorithmBox from "../../GenericAlgorithm/AlgorithmBox";
-import { Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
-const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder("utf-8");
 const key = generateBinaryKey(64);
-// const key = "1110001101011001010110001000100101010010100010001111111101000101";
-// const key = "1111101011011000111111110011111010101101100100111101111111110111";
-// const key = "1111111011100110001111000101111001101110110001010111100000000000";
-// const key = "1011010101000010101000001100000001110111111011111001001101110000"; //klucz gdy przeniesione nizej minusblock
 
 const Des: React.FC = () => {
-  const [input, setInput] = useState<string>("");
-  const [inputV2, setInputV2] = useState<string>("");
-  const [output, setOutput] = useState<string>("");
+  const [encryptionInput, setEncryptionInput] = useState<string>("");
+  const [decryptionInput, setDecryptionInput] = useState<string>("");
   const handleReadFromFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] as File;
     const reader = new FileReader();
     if (file) {
       reader.onload = (e) => {
-        const text = e.target?.result;
-        setInput(text as string);
+        setEncryptionInput(convertToBinaryString(reader.result as string));
       };
-      reader.readAsText(file);
+      reader.readAsBinaryString(file);
     }
   };
   const handleReadFromFileV2 = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,64 +36,59 @@ const Des: React.FC = () => {
     const reader = new FileReader();
     if (file) {
       reader.onload = (e) => {
-        setInputV2(convertToBinaryArray(reader.result as string));
+        setDecryptionInput(convertToBinaryString(reader.result as string));
       };
       reader.readAsBinaryString(file);
     }
   };
 
   const handleDes = (encryption: Boolean) => {
-    let binaryInput = convertToBinaryArray(input); //✅
-    if (!encryption) {
-      binaryInput = inputV2;
-    }
+    // wczytujemy plik w postaci stringa przechowującego dane binarne
+    const binaryInput = encryption ? encryptionInput : decryptionInput;
     console.log("wejscie binarnie: " + binaryInput);
-    // console.log("🔪dlugosc wejscia: " + binaryInput.length);
     console.log("klucz:" + key);
-    // _________________________________________________________________________
     // rozbijamy na bloki po 64 bity
     let splittedInputIntoBlocks = splitFileIntoBlocks(binaryInput);
     if (!encryption) {
       splittedInputIntoBlocks = splitIntoBlocks(binaryInput, 64);
     }
-
-    console.log("🔪wejscie binarnie bloki: " + splittedInputIntoBlocks);
-    // _________________________________________________________________________
-    // permutacja początkowa
-    // _________________________________________________________________________
+    // pierwsza permutacja
     const blocksAfterFirstPermuation = splittedInputIntoBlocks.map((block) =>
       applyPermutation(block, Tables.initialPermutation)
-    ); //blocksAfterFirstPermuation
-    // _________________________________________________________________________
-    // rozbijamy na lewą i prawą część
-    // _________________________________________________________________________
-    const blocksAfterFirstStep = blocksAfterFirstPermuation.map((block) => {
+    );
+    // dzielimy bloki na dwie równe części
+    const splittedBlocks = blocksAfterFirstPermuation.map((block) => {
       const splitedBlock = splitIntoBlocks(block, 32);
       const left = splitedBlock[0];
       const right = splitedBlock[1];
       return { left, right };
     });
 
+    // pierwsza permutacja klucza
     const keyAfterPermutation = applyPermutation(key, Tables.keyPermutation);
 
+    // dzielimy klucz na dwie równe części
     const splitedKey = {
       left: splitIntoBlocks(keyAfterPermutation, 28)[0],
       right: splitIntoBlocks(keyAfterPermutation, 28)[1],
     };
 
     const leftKeys: string[] = [];
-
-    const rightKeys = [];
+    const rightKeys: string[] = [];
     const keys: string[] = [];
-    let nthRightBlocks = blocksAfterFirstStep.map((block) => block.right);
 
-    const nthLeftBlocks = blocksAfterFirstStep.map((block) => block.left);
+    // deklarujemy tablice bloków lewych i prawych
+    const rightBlocks = splittedBlocks.map((block) => block.right);
+    const leftBlocks = splittedBlocks.map((block) => block.left);
 
     const finalBlocks: string[] = [];
+
     for (let i = 0; i < 16; i++) {
+      // wykonujemy przesunięcia bitowe na połówkach klucza, zapisując jego 16 wersji
       leftKeys.push(shiftLeft(splitedKey.left, Tables.IterateShiftAmount[i]));
       rightKeys.push(shiftLeft(splitedKey.right, Tables.IterateShiftAmount[i]));
 
+      // łączymy połówki klucza
       keys.push(
         applyPermutation(
           joinBlocks(leftKeys[i], rightKeys[i]),
@@ -113,34 +97,45 @@ const Des: React.FC = () => {
       );
     }
 
+    // w przypadku odszyfrowywania klucze muszą być użyte w odwrotnej kolejności
     if (!encryption) {
       keys.reverse();
     }
 
-    for (let j = 0; j < blocksAfterFirstStep.length; j++) {
+    // dla kadego bloku danych
+    for (let j = 0; j < splittedBlocks.length; j++) {
+      let rightBlock = rightBlocks[j];
+      let leftBlock = leftBlocks[j];
+      // wykonujemy 16 iteracji głównej części algorytmu DES
       for (let i = 0; i < 16; i++) {
-        const ogRightBlock = nthRightBlocks[j];
-        nthRightBlocks[j] = applyPermutation(
-          nthRightBlocks[j],
-          Tables.ePermutation
-        );
-        nthRightBlocks[j] = applyXOR(nthRightBlocks[j], keys[i]);
-        nthRightBlocks[j] = iterate(nthRightBlocks[j]);
-        nthRightBlocks[j] = applyPermutation(
-          nthRightBlocks[j],
-          Tables.pPermutation
-        );
-        nthRightBlocks[j] = applyXOR(nthLeftBlocks[j], nthRightBlocks[j]);
+        // zapisujemy wartość i bloku prawego, po wykonanu operacji danej iteracji będzie on i-1 blokiem
+        const ogRightBlock = rightBlock;
+        // wykonujemy permutację rozszerzającą na i prawym bloku
+        // 32bit -> 48bit
+        rightBlock = applyPermutation(rightBlock, Tables.ePermutation);
+        // wykonujemy operację modulo 2 na i prawym bloku oraz i kluczu
+        rightBlock = applyXOR(rightBlock, keys[i]);
+        // dzielimy i prawy blok na 8 bloków po 6 bitów i za pomocą tablic S zastępujemy każdy z nich 4 bitowym blokiem
+        // 48bit -> 32bit
+        rightBlock = iterate(rightBlock);
+        // wykonujemy permutację P na i prawym bloku
+        rightBlock = applyPermutation(rightBlock, Tables.pPermutation);
+        // wykonujemy operację modulo 2 na i prawym bloku oraz i lewym bloku
+        rightBlock = applyXOR(leftBlock, rightBlock);
 
-        nthLeftBlocks[j] = ogRightBlock;
+        // i blok lewy staje się i-1 blokiem prawym
+        leftBlock = ogRightBlock;
       }
-      let finalBlock = joinBlocks(nthRightBlocks[j], nthLeftBlocks[j]);
+      // bloki lewe i prawe są zamieniane miejscami i łączone w jeden blok
+      let finalBlock = joinBlocks(rightBlock, leftBlock);
+      // wykonujemy permutację końcową
       finalBlock = applyPermutation(
         finalBlock,
         Tables.inversedInitialPermutation
       );
       finalBlocks.push(finalBlock);
     }
+    // łączymy bloki w jeden ciąg bitów i konwertujemy na tablicę 8 bitowych liczb w celu utworzenia pliku binarnego stanowiącego wynik algorytmu
     const joinedBlocks = joinBlocks(...finalBlocks);
     const binaryArray = new Uint8Array(
       joinedBlocks.match(/.{1,8}/g)!.map((byte) => parseInt(byte, 2))
@@ -152,17 +147,58 @@ const Des: React.FC = () => {
     downloadWindow!.focus();
     URL.revokeObjectURL(url);
     const finalText = textDecoder.decode(binaryArray);
-    console.log("🔪output text: " + finalText);
-    console.log("🔪output binary: " + finalBlocks);
-
-    console.log("-------------------------------------");
+    console.log("output text: " + finalText);
+    console.log("output binary: " + finalBlocks);
   };
   return (
     <AlgorithmBox algorithmName="DES">
-      <input type="file" onChange={handleReadFromFile} />
-      <Button onClick={() => handleDes(true)}>Encrypt</Button>
-      <input type="file" onChange={handleReadFromFileV2} />
-      <Button onClick={() => handleDes(false)}>Decrypt</Button>
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <Box display="flex" py={2}>
+          <Box>
+            <Typography variant="h5" fontWeight="bold">
+              Encryption
+            </Typography>
+            <input
+              style={{ fontSize: 16 }}
+              type="file"
+              onChange={handleReadFromFile}
+            />
+          </Box>
+          <Button
+            variant="contained"
+            sx={{ fontSize: 16 }}
+            onClick={() => handleDes(true)}
+          >
+            Encrypt
+          </Button>
+        </Box>
+        <Box display="flex" py={2}>
+          <Box>
+            <Typography variant="h5" fontWeight="bold">
+              Decryption
+            </Typography>
+            <input
+              style={{ fontSize: 16 }}
+              type="file"
+              onChange={handleReadFromFileV2}
+            />
+          </Box>
+          <Button
+            variant="contained"
+            sx={{ fontSize: 16 }}
+            onClick={() => handleDes(false)}
+          >
+            Decrypt
+          </Button>
+        </Box>
+      </Box>
     </AlgorithmBox>
   );
 };

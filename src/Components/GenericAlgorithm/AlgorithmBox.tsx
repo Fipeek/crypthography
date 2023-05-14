@@ -21,13 +21,14 @@ const AlgorithmBox: React.FC<props> = ({ children, algorithmName }) => {
         margin: "1rem",
       }}
     >
-      <Typography fontWeight="bold" textAlign="center" variant="h5">
+      <Typography pt={4} fontWeight="bold" textAlign="center" variant="h4">
         {algorithmName}
       </Typography>
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-around",
+          height: "100%",
         }}
       >
         {children}
